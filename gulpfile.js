@@ -1,0 +1,25 @@
+var gulp = require('gulp'),
+	gulpwebpack = require('webpack-stream'),
+	webpackConfig = require('./tasks/webpack.build'),
+	webpack = require('webpack'),
+	replace = require('gulp-replace'),
+	config = require('./config').default,
+	publicPath = config.publicPath,
+	outputPath = config.outputPath+'FJCurry/pc/',
+	date = new Date(),
+	time = date.getTime();
+
+gulp.task('default', ['html'])
+
+gulp.task('webpack',function(){
+    return gulp.src('./src/*.js')
+    	.pipe(gulpwebpack(webpackConfig))
+    	.pipe(gulp.dest(outputPath));
+});
+
+gulp.task('html', ['webpack'], function(){
+	return gulp.src(outputPath+'html/*.html')
+		.pipe(replace(/\.\.\/css\/(\S+\.(css))/g,publicPath+'css/$1?v='+time))
+		.pipe(replace(/\.\.\/js\/(\S+\.(js))/g,publicPath+'js/$1?v='+time))
+		.pipe(gulp.dest(outputPath+'html/'));
+})
